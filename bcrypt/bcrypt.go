@@ -4,7 +4,7 @@
 
 // Package bcrypt implements Provos and Mazières's bcrypt adaptive hashing
 // algorithm. See http://www.usenix.org/event/usenix99/provos/provos.pdf
-package bcrypt // import "golang.org/x/crypto/bcrypt"
+package bcrypt
 
 // The code is a port of Provos and Mazières's C implementation.
 import (
@@ -63,7 +63,7 @@ const (
 )
 
 // magicCipherData is an IV for the 64 Blowfish encryption calls in
-// bcrypt(). It's the string "OrpheanBeholderScryDoubt" in big-endian bytes.
+// Bcrypt(). It's the string "OrpheanBeholderScryDoubt" in big-endian bytes.
 var magicCipherData = []byte{
 	0x4f, 0x72, 0x70, 0x68,
 	0x65, 0x61, 0x6e, 0x42,
@@ -101,7 +101,7 @@ func CompareHashAndPassword(hashedPassword, password []byte) error {
 		return err
 	}
 
-	otherHash, err := bcrypt(password, p.cost, p.salt)
+	otherHash, err := Bcrypt(password, p.cost, p.salt)
 	if err != nil {
 		return err
 	}
@@ -126,6 +126,16 @@ func Cost(hashedPassword []byte) (int, error) {
 	return p.cost, nil
 }
 
+func GenerateSalt() ([]byte, error) {
+	unencodedSalt := make([]byte, maxSaltSize)
+	_, err := io.ReadFull(rand.Reader, unencodedSalt)
+	if err != nil {
+		return nil, err
+	}
+
+	return base64Encode(unencodedSalt), nil
+}
+
 func newFromPassword(password []byte, cost int) (*hashed, error) {
 	if cost < MinCost {
 		cost = DefaultCost
@@ -140,14 +150,13 @@ func newFromPassword(password []byte, cost int) (*hashed, error) {
 	}
 	p.cost = cost
 
-	unencodedSalt := make([]byte, maxSaltSize)
-	_, err = io.ReadFull(rand.Reader, unencodedSalt)
+	salt, err := GenerateSalt()
 	if err != nil {
 		return nil, err
 	}
 
-	p.salt = base64Encode(unencodedSalt)
-	hash, err := bcrypt(password, p.cost, p.salt)
+	p.salt = salt
+	hash, err := Bcrypt(password, p.cost, p.salt)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +192,7 @@ func newFromHash(hashedSecret []byte) (*hashed, error) {
 	return p, nil
 }
 
-func bcrypt(password []byte, cost int, salt []byte) ([]byte, error) {
+func Bcrypt(password []byte, cost int, salt []byte) ([]byte, error) {
 	cipherData := make([]byte, len(magicCipherData))
 	copy(cipherData, magicCipherData)
 
