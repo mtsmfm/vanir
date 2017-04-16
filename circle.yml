@@ -14,7 +14,7 @@ test:
     - cat example.sql | docker-compose run app go-wrapper run --config example.yml --cost 5
 deployment:
   release:
-    tag: /v[0-9]+(\.[0-9]+)*/
+    branch: master
     commands:
       - docker-compose run app go get github.com/mitchellh/gox
       - docker-compose run app go get github.com/tcnksm/ghr
