@@ -1,0 +1,22 @@
+machine:
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
+    - pip install docker-compose
+  services:
+    - docker
+dependencies:
+  override:
+    - echo noop
+test:
+  override:
+    - docker-compose run app go-wrapper download
+    - docker-compose run app go-wrapper install
+    - cat example.sql | docker-compose run app go-wrapper run --config example.yml --cost 5
+deployment:
+  release:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - docker-compose run app go get github.com/mitchellh/gox
+      - docker-compose run app go get github.com/tcnksm/ghr
+      - docker-compose run app gox --os "windows linux darwin" --arch "386 amd64" --output "dist/vanir_{{.OS}}_{{.Arch}}" -ldflags "-X main.version=$(cat VERSION) -X main.commit=$CIRCLE_SHA1"
+      - docker-compose run app ghr -t $GITHUB_TOKEN -u $USERNAME -r $CIRCLE_PROJECT_REPONAME --replace v$(cat VERSION) dist/
