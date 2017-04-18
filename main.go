@@ -123,7 +123,11 @@ func handleLine(line string, configData map[string]map[string]*template.Template
 				}
 				insert.Rows.(sqlparser.Values)[i].(sqlparser.ValTuple)[j] = sqlparser.StrVal(buf.Bytes())
 			case sqlparser.NumVal:
-				// noop at this time
+				err = tmpl.Execute(&buf, &TemplateValue{Raw: string(val), Salt: string(salt)})
+				if err != nil {
+					log.Fatal(err)
+				}
+				insert.Rows.(sqlparser.Values)[i].(sqlparser.ValTuple)[j] = sqlparser.NumVal(buf.Bytes())
 			}
 		}
 	}

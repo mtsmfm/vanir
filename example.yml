@@ -1,3 +1,5 @@
 users: # Table name
   name: "AAA" # Simply replace all name with "AAA"
   email: "{{.First 6}}.{{.Hashed}}.{{.Last 3}}@example.com" # You can use go template here
+  lat: 36.5
+  lng: 136.5
