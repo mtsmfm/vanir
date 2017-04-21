@@ -32,9 +32,11 @@ At this time, vanir can mask SQL dumped with `--complete-insert` option only.
         mysqldump --complete-insert > dump.sql
         cat dump.sql | vanir -c path/to/config.yml
 
-### Installation
+## Installation
 
-TODO
+Donwload an executable binary for your platform:
+
+https://github.com/mtsmfm/vanir/releases
 
 ## Development
 
