@@ -32,6 +32,18 @@ At this time, vanir can mask SQL dumped with `--complete-insert` option only.
         mysqldump --complete-insert > dump.sql
         cat dump.sql | vanir -c path/to/config.yml
 
+### Formatting
+
+You can use [Go templates](https://golang.org/pkg/text/template/) to format output.
+
+| Function | Configuration | Input | Output                                                             |
+|:------------------------------------------------------------------------------------------------------|
+| Hashed   | `{{.Hashed}}@example.com` | mtsmfm@gmail.com | hr9FYQ5ZbHCEonO9ucjozR6DhBzyPwW@example.com |
+| First(n) | `{{.First 1}}@example.com` | mtsmfm@gmail.com | m@example.com                              |
+| Last(n) | `{{.Last 1}}@example.com` | mtsmfm@gmail.com | c@example.com                                |
+| Raw | `{{.Raw}}@example.com` | mtsmfm@gmail.com | mtsmfm@gmail.com@example.com                        |
+| Salt | `{{.Salt}}@example.com` | mtsmfm@gmail.com | RzXBbxLFGNUzuy1ppryBQu@example.com                |
+
 ## Installation
 
 Donwload an executable binary for your platform:
