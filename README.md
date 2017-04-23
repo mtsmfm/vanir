@@ -28,9 +28,6 @@ Vanir is a database masking tool.
 At this time, vanir can mask SQL dumped with `--complete-insert` option only.
 
         mysqldump --complete-insert | vanir -c path/to/config.yml
-        # or
-        mysqldump --complete-insert > dump.sql
-        cat dump.sql | vanir -c path/to/config.yml
 
 ### Formatting
 
